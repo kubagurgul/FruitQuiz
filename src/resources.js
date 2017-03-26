@@ -3,7 +3,7 @@ export const constants = {
     imgStandardHeight: 155,
     imgCanvasOffset: 20,
     imgSpinRadius: 49,
-    imgSpinOffset: 10,
+    imgSpinOffset: 10
 }
 
 export const elementIds = {
@@ -18,7 +18,7 @@ export const elementIds = {
 
     imgCanvas: "imgCanvas",
     infoCanvas: "infoCanvas",
-    controlCanvas: "controlCanvas",
+    controlCanvas: "controlCanvas"
 };
 
 export const images = {
