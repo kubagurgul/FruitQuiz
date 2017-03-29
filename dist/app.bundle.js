@@ -2473,7 +2473,7 @@ exports = module.exports = __webpack_require__(8)(undefined);
 
 
 // module
-exports.push([module.i, "body,html{height:100%;min-height:100%;margin:0;padding:0}body{background-color:#add8e6}#mainContainer{position:absolute;display:flex;flex-flow:row wrap;min-width:960px;min-height:536px;left:50%;top:50%;margin:-268px 0 0 -480px}#imagePanel{flex:6 auto}#rightPanel{flex:4 auto}#controlContainer{width:100%;height:100%;display:flex;flex-direction:column}#controlPanel,#infoPanel,#selectPanel{flex:1}", ""]);
+exports.push([module.i, "html,\r\nbody {\r\n    height: 100%;\r\n    min-height: 100%;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\nbody {\r\n    background-color: lightblue;\r\n}\r\n\r\n\r\n/*top container ------------*/\r\n\r\n#mainContainer {\r\n    position: absolute;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    min-width: 960px;\r\n    min-height: 536px;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin: -268px 0 0 -480px;\r\n}\r\n\r\n#imagePanel {\r\n    flex: 6 auto;\r\n}\r\n\r\n#rightPanel {\r\n    flex: 4 auto;\r\n}\r\n\r\n#controlContainer {\r\n    /*background: black;*/\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n#infoPanel {\r\n    /*background-color: red;*/\r\n    flex: 1;\r\n}\r\n\r\n#selectPanel {\r\n    /*background-color: yellow;*/\r\n    flex: 1;\r\n}\r\n\r\n#controlPanel {\r\n    /*background-color: blue;*/\r\n    flex: 1;\r\n}", ""]);
 
 // exports
 
