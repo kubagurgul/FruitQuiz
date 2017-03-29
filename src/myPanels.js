@@ -1,14 +1,14 @@
-import { elementIds, images, constants, MyImage } from './resources.js';
+import { elementIds, images, constants, MyImage, messages, GameState } from './resources.js';
 import { Decorators } from './utils.js';
 
 export class ImagePanelModule {
     constructor() {
-        this.canvasCtx = null;
+        this._canvascanvasCtx = null;
     }
-    draw() {
+
+    init() {
         this.drawMainCanvas();
         this.drawFrame();
-        this.drawImage(0);
     }
     drawMainCanvas() {
         const drawingPanel = document.getElementById(elementIds.imagePanel);
@@ -18,18 +18,16 @@ export class ImagePanelModule {
         canvas.width = constants.imgStandardWidth + constants.imgCanvasOffset;
         canvas.height = constants.imgStandardHeight + constants.imgCanvasOffset;
         drawingPanel.appendChild(canvas);
-        this.canvasCtx = canvas.getContext('2d');
+        this._canvascanvasCtx = canvas.getContext('2d');
     }
     drawFrame() {
-        this.canvasCtx.strokeRect(10, 10, constants.imgStandardWidth, constants.imgStandardHeight);
+        this._canvascanvasCtx.strokeRect(5, 5, constants.imgStandardWidth + 10, constants.imgStandardHeight + 10);
     }
 
     drawImage(x) {
         const myImg = images.quizImages[x];
-        const ctx = this.canvasCtx;
-
-        ctx.clearRect(10, 10, constants.imgStandardWidth, constants.imgStandardHeight);
-
+        const ctx = this._canvascanvasCtx;
+        this.clearCanvas();
         if (!myImg.imgElement) {
             const img = new Image();
             img.src = myImg.name;
@@ -42,16 +40,23 @@ export class ImagePanelModule {
         }
         return myImg.name;
     }
+    reset() {
+        this.clearCanvas();
+    }
+
+    clearCanvas() {
+        this._canvascanvasCtx.clearRect(10, 10, constants.imgStandardWidth, constants.imgStandardHeight);
+    }
 }
 
 export class InfoPanelModule {
     constructor() {
-        this.canvasCtx = null;
+        this._canvascanvasCtx = null;
     }
 
-    draw() {
+    init() {
         this.drawCanvas();
-        this.drawText("Ready?");
+        this.drawTextForGameState(GameState.INITIAL);
     }
 
     drawCanvas() {
@@ -62,26 +67,65 @@ export class InfoPanelModule {
         canvas.heigth = 150;
         Decorators.elementToCenterDecorator(canvas.style, 150, 300);
         infoPanel.appendChild(canvas);
-        this.canvasCtx = canvas.getContext('2d');
+        this._canvascanvasCtx = canvas.getContext('2d');
 
     }
 
+    drawTextForGameState(gameState) {
+        switch (gameState) {
+            case GameState.LOADING:
+            case GameState.INITIAL:
+                this.drawText(messages.infoModule_initial);
+                this.drawDescText(messages.infoModule_desc_initial);
+                break;
+            case GameState.READY:
+                this.drawText(messages.infoModule_ready);
+                this.drawDescText(messages.infoModule_desc_ready);
+                break;
+            case GameState.LOST:
+                this.drawText(messages.infoModule_lostMessage);
+                this.drawDescText(messages.infoModule_desc_afterGame);
+                break;
+            case GameState.WIN:
+                this.drawText(messages.infoModule_winMessage);
+                this.drawDescText(messages.infoModule_desc_afterGame);
+                break;
+
+        }
+    }
+
     drawText(text) {
-        this.canvasCtx.clearRect(0, 0, 300, 150);
-        this.canvasCtx.font = '48px serif';
-        this.canvasCtx.fillText(text, 10, 100);
+        this._canvascanvasCtx.clearRect(0, 0, 300, 70);
+        this._canvascanvasCtx.font = '48px serif';
+        this._canvascanvasCtx.fillText(text, 10, 50);
+
+    }
+
+    drawDescText(text) {
+        this._canvascanvasCtx.clearRect(0, 70, 300, 70);
+        this._canvascanvasCtx.font = '24px serif';
+        this._canvascanvasCtx.fillText(text, 10, 100);
+    }
+
+    reset() {
+        this.drawText(messages.infoModule_initial);
+        this.drawDescText(messages.infoModule_desc_initial);
     }
 
 }
 
 export class SelectionModule {
-    constructor() {}
+    constructor() {
+        this._canvascanvasCtx = null;
+    }
 
-    draw() {
+    init() {
         const selectionPanel = document.getElementById(elementIds.selectPanel);
         selectionPanel.innerHTML = `
             <div>
-            <select id="selectImg" style="font-size: 30px; padding: 5px; width: 180px; position: relative; left:50px; top:50px">
+            <canvas width="80" height="50" id="thumbnail" style="position: relative; left:80px; top:65px "></canvas>
+            <select id="selectImg" style="font-size: 30px; padding: 5px; width: 180px; position: relative; left:80px; top:50px">
+                <option disabled selected value> -- select -- </option>
                 <option value="SYM1.png">SYM1</option>
                 <option value="SYM3.png">SYM3</option>
                 <option value="SYM4.png">SYM4</option>
@@ -91,24 +135,68 @@ export class SelectionModule {
             </select>
             </div>
         `;
+        this._canvascanvasCtx = document.getElementById('thumbnail').getContext('2d');
+
     }
 
-    getSelectedValue() {
+    setupHandlers(onSelection) {
+        const selectImgElement = document.getElementById("selectImg");
+        selectImgElement.addEventListener("change", (e) => {
+            this.drawSelectedSymbolThumbnail(selectImgElement.value);
+            onSelection(selectImgElement.value);
+        });
+
+    }
+
+    drawSelectedSymbolThumbnail(value) {
+        const ctx = this._canvascanvasCtx;
+        ctx.clearRect(0, 0, 80, 50);
+        const myImg = images.quizImages.find((p) => p.name == value);
+
+        if (!myImg.imgElement) {
+            const img = new Image();
+            img.src = myImg.name;
+            img.onload = function() {
+                ctx.drawImage(myImg.imgElement, 0, 0, 80, 50);
+            }
+            myImg.imgElement = img;
+        } else {
+            ctx.drawImage(myImg.imgElement, 0, 0, 80, 50);
+        }
+
+    }
+
+    getSelectedValueAsNumber() {
         const selectItem = document.getElementById("selectImg");
-        const index = selectItem.selectedIndex;
-        return selectItem.options[index].value;
+        return selectItem.selectedIndex;
+    }
+
+    disable(disable) {
+        if (disable) {
+            document.getElementById('selectImg').setAttribute("disabled", "");
+            document.getElementById('selectImg').options[0].selected = true;
+        } else {
+            document.getElementById('selectImg').removeAttribute("disabled");
+        }
+    }
+
+    reset() {
+        const selectImg = document.getElementById('selectImg');
+        selectImg.value = 0;
+        this._canvascanvasCtx.clearRect(0, 0, 80, 50);
+        this.disable(false);
     }
 }
 
 export class ControlModule {
     constructor() {
-        this.canvasCtx = null;
-        this.loaded = false;
+        this._canvasCtx = null;
+        this._ready = false;
     }
 
-    draw() {
+    init() {
         this.drawCanvas();
-        this.drawButton(true);
+        this.drawButton();
     }
 
     drawCanvas() {
@@ -119,34 +207,54 @@ export class ControlModule {
         canvas.heigth = 150;
         Decorators.elementToCenterDecorator(canvas.style, 150, 300);
         controlPanel.appendChild(canvas);
-        this.canvasCtx = canvas.getContext('2d');
+        this._canvasCtx = canvas.getContext('2d');
 
     }
 
-    drawButton(active) {
+    drawButton() {
         let imgUrl = null;
-        (active) ? imgUrl = "BTN_Spin.png": imgUrl = "BTN_Spin_d.png";
+        (this._ready) ? imgUrl = "BTN_Spin.png": imgUrl = "BTN_Spin_d.png";
         const img = images.layoutImages.find(v => v.name == imgUrl);
         const myImage = new Image();
-        const ctx = this.canvasCtx;
+        const ctx = this._canvasCtx;
         myImage.src = img.name;
         myImage.onload = function() {
-            console.log("ONLOAD");
             ctx.drawImage(myImage, 10, 10);
         }
     }
 
     setupHandlers(onSpinButtonClick) {
         const canvas = document.getElementById(elementIds.controlCanvas);
+        const _this = this;
         canvas.addEventListener("click", e => {
-            var x = e.offsetX,
-                y = e.offsetY;
-            if (Math.pow(x - 59, 2) + Math.pow(y - 59, 2) < Math.pow(54, 2)) {
-                if (onSpinButtonClick)
-                    onSpinButtonClick();
+            if (_this.ready) {
+                var x = e.offsetX,
+                    y = e.offsetY;
+                if (Math.pow(x - 59, 2) + Math.pow(y - 59, 2) < Math.pow(54, 2)) {
+                    if (onSpinButtonClick)
+                        onSpinButtonClick();
+                }
             }
         });
-        this.loaded = true;
+    }
+
+    disable(disable) {
+        this._ready = !disable;
+        this.drawButton();
+    }
+
+    reset() {
+        this._ready = false;
+        this.drawButton();
+        this.disable(true);
+    }
+
+    set ready(ready) {
+        this._ready = ready;
+    }
+
+    get ready() {
+        return this._ready;
     }
 
 }
