@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 25);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -102,9 +102,22 @@ const elementIds = {
 const images = {
     quizImages: [],
     layoutImages: [],
-
 }
 /* harmony export (immutable) */ __webpack_exports__["images"] = images;
+
+
+const messages = {
+    infoModule_winMessage: "YOU WON!!",
+    infoModule_lostMessage: "YOU LOST :(",
+    infoModule_initial: "",
+    infoModule_ready: "",
+    infoModule_desc_initial: "Select symbol",
+    infoModule_desc_afterGame: "Click anywhere to play again",
+    infoModule_desc_ready: "Click on spin button to start"
+
+
+}
+/* harmony export (immutable) */ __webpack_exports__["messages"] = messages;
 
 
 class MyImage {
@@ -129,17 +142,86 @@ class MyImage {
 /* harmony export (immutable) */ __webpack_exports__["MyImage"] = MyImage;
 
 
+const GameState = {
+    LOADING: 0,
+    INITIAL: 1,
+    READY: 2,
+    WIN: 3,
+    LOST: 4,
+
+}
+/* harmony export (immutable) */ __webpack_exports__["GameState"] = GameState;
+
+
 /***/ }),
 /* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__resources_js__ = __webpack_require__(0);
+
+
+class Decorators {
+    static elementToCenterDecorator(style, height, width) {
+        style.position = "relative";
+        style.left = "50%";
+        style.top = "50%";
+        style.margin = "-" + (height / 2) + "px 0 0 -" + (width / 2) + "px";
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["c"] = Decorators;
+
+
+class Utils {
+    static generateRandom(max) {
+        return Math.floor((Math.random() * max));
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Utils;
+
+
+class Services {
+    static loadResources(callback) {
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+                    let quizImages = JSON.parse(xhr.response).quizImages;
+                    for (let imgUrl of quizImages) {
+                        const image = new Image();
+                        image.src = imgUrl;
+                        __WEBPACK_IMPORTED_MODULE_0__resources_js__["images"].quizImages.push(new __WEBPACK_IMPORTED_MODULE_0__resources_js__["MyImage"](imgUrl));
+                    }
+                    let layoutImages = JSON.parse(xhr.response).layoutImages;
+                    for (let imgUrl of layoutImages) {
+                        const image = new Image();
+                        image.src = imgUrl;
+                        __WEBPACK_IMPORTED_MODULE_0__resources_js__["images"].layoutImages.push(new __WEBPACK_IMPORTED_MODULE_0__resources_js__["MyImage"](imgUrl));
+                    }
+                } else {
+                    alert("Request was unsuccessful: " + xhr.status);
+                }
+                callback();
+            }
+        };
+        xhr.open("GET", "resources.json");
+        xhr.send(null);
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["b"] = Services;
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(6);
+var content = __webpack_require__(7);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(21)(content, {});
+var update = __webpack_require__(22)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -156,44 +238,42 @@ if(false) {
 }
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__resources_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_js__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_js__ = __webpack_require__(1);
 
 
 
 class ImagePanelModule {
     constructor() {
-        this.canvasCtx = null;
+        this._canvascanvasCtx = null;
     }
-    draw() {
+
+    init() {
         this.drawMainCanvas();
         this.drawFrame();
-        this.drawImage(0);
     }
     drawMainCanvas() {
         const drawingPanel = document.getElementById(__WEBPACK_IMPORTED_MODULE_0__resources_js__["elementIds"].imagePanel);
         const canvas = document.createElement("canvas");
         canvas.id = __WEBPACK_IMPORTED_MODULE_0__resources_js__["elementIds"].imgCanvas;
-        __WEBPACK_IMPORTED_MODULE_1__utils_js__["a" /* Decorators */].elementToCenterDecorator(canvas.style, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth);
+        __WEBPACK_IMPORTED_MODULE_1__utils_js__["c" /* Decorators */].elementToCenterDecorator(canvas.style, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth);
         canvas.width = __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth + __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgCanvasOffset;
         canvas.height = __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight + __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgCanvasOffset;
         drawingPanel.appendChild(canvas);
-        this.canvasCtx = canvas.getContext('2d');
+        this._canvascanvasCtx = canvas.getContext('2d');
     }
     drawFrame() {
-        this.canvasCtx.strokeRect(10, 10, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight);
+        this._canvascanvasCtx.strokeRect(5, 5, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth + 10, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight + 10);
     }
 
     drawImage(x) {
         const myImg = __WEBPACK_IMPORTED_MODULE_0__resources_js__["images"].quizImages[x];
-        const ctx = this.canvasCtx;
-
-        ctx.clearRect(10, 10, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight);
-
+        const ctx = this._canvascanvasCtx;
+        this.clearCanvas();
         if (!myImg.imgElement) {
             const img = new Image();
             img.src = myImg.name;
@@ -206,18 +286,25 @@ class ImagePanelModule {
         }
         return myImg.name;
     }
+    reset() {
+        this.clearCanvas();
+    }
+
+    clearCanvas() {
+        this._canvascanvasCtx.clearRect(10, 10, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardWidth, __WEBPACK_IMPORTED_MODULE_0__resources_js__["constants"].imgStandardHeight);
+    }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = ImagePanelModule;
 
 
 class InfoPanelModule {
     constructor() {
-        this.canvasCtx = null;
+        this._canvascanvasCtx = null;
     }
 
-    draw() {
+    init() {
         this.drawCanvas();
-        this.drawText("Ready?");
+        this.drawTextForGameState(__WEBPACK_IMPORTED_MODULE_0__resources_js__["GameState"].INITIAL);
     }
 
     drawCanvas() {
@@ -226,16 +313,51 @@ class InfoPanelModule {
         canvas.id = __WEBPACK_IMPORTED_MODULE_0__resources_js__["elementIds"].infoCanvas;
         canvas.width = 300;
         canvas.heigth = 150;
-        __WEBPACK_IMPORTED_MODULE_1__utils_js__["a" /* Decorators */].elementToCenterDecorator(canvas.style, 150, 300);
+        __WEBPACK_IMPORTED_MODULE_1__utils_js__["c" /* Decorators */].elementToCenterDecorator(canvas.style, 150, 300);
         infoPanel.appendChild(canvas);
-        this.canvasCtx = canvas.getContext('2d');
+        this._canvascanvasCtx = canvas.getContext('2d');
 
     }
 
+    drawTextForGameState(gameState) {
+        switch (gameState) {
+            case __WEBPACK_IMPORTED_MODULE_0__resources_js__["GameState"].LOADING:
+            case __WEBPACK_IMPORTED_MODULE_0__resources_js__["GameState"].INITIAL:
+                this.drawText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_initial);
+                this.drawDescText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_desc_initial);
+                break;
+            case __WEBPACK_IMPORTED_MODULE_0__resources_js__["GameState"].READY:
+                this.drawText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_ready);
+                this.drawDescText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_desc_ready);
+                break;
+            case __WEBPACK_IMPORTED_MODULE_0__resources_js__["GameState"].LOST:
+                this.drawText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_lostMessage);
+                this.drawDescText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_desc_afterGame);
+                break;
+            case __WEBPACK_IMPORTED_MODULE_0__resources_js__["GameState"].WIN:
+                this.drawText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_winMessage);
+                this.drawDescText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_desc_afterGame);
+                break;
+
+        }
+    }
+
     drawText(text) {
-        this.canvasCtx.clearRect(0, 0, 300, 150);
-        this.canvasCtx.font = '48px serif';
-        this.canvasCtx.fillText(text, 10, 100);
+        this._canvascanvasCtx.clearRect(0, 0, 300, 70);
+        this._canvascanvasCtx.font = '48px serif';
+        this._canvascanvasCtx.fillText(text, 10, 50);
+
+    }
+
+    drawDescText(text) {
+        this._canvascanvasCtx.clearRect(0, 70, 300, 70);
+        this._canvascanvasCtx.font = '24px serif';
+        this._canvascanvasCtx.fillText(text, 10, 100);
+    }
+
+    reset() {
+        this.drawText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_initial);
+        this.drawDescText(__WEBPACK_IMPORTED_MODULE_0__resources_js__["messages"].infoModule_desc_initial);
     }
 
 }
@@ -243,13 +365,17 @@ class InfoPanelModule {
 
 
 class SelectionModule {
-    constructor() {}
+    constructor() {
+        this._canvascanvasCtx = null;
+    }
 
-    draw() {
+    init() {
         const selectionPanel = document.getElementById(__WEBPACK_IMPORTED_MODULE_0__resources_js__["elementIds"].selectPanel);
         selectionPanel.innerHTML = `
             <div>
-            <select id="selectImg" style="font-size: 30px; padding: 5px; width: 180px; position: relative; left:50px; top:50px">
+            <canvas width="80" height="50" id="thumbnail" style="position: relative; left:80px; top:65px "></canvas>
+            <select id="selectImg" style="font-size: 30px; padding: 5px; width: 180px; position: relative; left:80px; top:50px">
+                <option disabled selected value> -- select -- </option>
                 <option value="SYM1.png">SYM1</option>
                 <option value="SYM3.png">SYM3</option>
                 <option value="SYM4.png">SYM4</option>
@@ -259,12 +385,56 @@ class SelectionModule {
             </select>
             </div>
         `;
+        this._canvascanvasCtx = document.getElementById('thumbnail').getContext('2d');
+
     }
 
-    getSelectedValue() {
+    setupHandlers(onSelection) {
+        const selectImgElement = document.getElementById("selectImg");
+        selectImgElement.addEventListener("change", (e) => {
+            this.drawSelectedSymbolThumbnail(selectImgElement.value);
+            onSelection(selectImgElement.value);
+        });
+
+    }
+
+    drawSelectedSymbolThumbnail(value) {
+        const ctx = this._canvascanvasCtx;
+        ctx.clearRect(0, 0, 80, 50);
+        const myImg = __WEBPACK_IMPORTED_MODULE_0__resources_js__["images"].quizImages.find((p) => p.name == value);
+
+        if (!myImg.imgElement) {
+            const img = new Image();
+            img.src = myImg.name;
+            img.onload = function() {
+                ctx.drawImage(myImg.imgElement, 0, 0, 80, 50);
+            }
+            myImg.imgElement = img;
+        } else {
+            ctx.drawImage(myImg.imgElement, 0, 0, 80, 50);
+        }
+
+    }
+
+    getSelectedValueAsNumber() {
         const selectItem = document.getElementById("selectImg");
-        const index = selectItem.selectedIndex;
-        return selectItem.options[index].value;
+        return selectItem.selectedIndex;
+    }
+
+    disable(disable) {
+        if (disable) {
+            document.getElementById('selectImg').setAttribute("disabled", "");
+            document.getElementById('selectImg').options[0].selected = true;
+        } else {
+            document.getElementById('selectImg').removeAttribute("disabled");
+        }
+    }
+
+    reset() {
+        const selectImg = document.getElementById('selectImg');
+        selectImg.value = 0;
+        this._canvascanvasCtx.clearRect(0, 0, 80, 50);
+        this.disable(false);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["c"] = SelectionModule;
@@ -272,13 +442,13 @@ class SelectionModule {
 
 class ControlModule {
     constructor() {
-        this.canvasCtx = null;
-        this.loaded = false;
+        this._canvasCtx = null;
+        this._ready = false;
     }
 
-    draw() {
+    init() {
         this.drawCanvas();
-        this.drawButton(true);
+        this.drawButton();
     }
 
     drawCanvas() {
@@ -287,36 +457,56 @@ class ControlModule {
         canvas.id = __WEBPACK_IMPORTED_MODULE_0__resources_js__["elementIds"].controlCanvas;
         canvas.width = 300;
         canvas.heigth = 150;
-        __WEBPACK_IMPORTED_MODULE_1__utils_js__["a" /* Decorators */].elementToCenterDecorator(canvas.style, 150, 300);
+        __WEBPACK_IMPORTED_MODULE_1__utils_js__["c" /* Decorators */].elementToCenterDecorator(canvas.style, 150, 300);
         controlPanel.appendChild(canvas);
-        this.canvasCtx = canvas.getContext('2d');
+        this._canvasCtx = canvas.getContext('2d');
 
     }
 
-    drawButton(active) {
+    drawButton() {
         let imgUrl = null;
-        (active) ? imgUrl = "BTN_Spin.png": imgUrl = "BTN_Spin_d.png";
+        (this._ready) ? imgUrl = "BTN_Spin.png": imgUrl = "BTN_Spin_d.png";
         const img = __WEBPACK_IMPORTED_MODULE_0__resources_js__["images"].layoutImages.find(v => v.name == imgUrl);
         const myImage = new Image();
-        const ctx = this.canvasCtx;
+        const ctx = this._canvasCtx;
         myImage.src = img.name;
         myImage.onload = function() {
-            console.log("ONLOAD");
             ctx.drawImage(myImage, 10, 10);
         }
     }
 
     setupHandlers(onSpinButtonClick) {
         const canvas = document.getElementById(__WEBPACK_IMPORTED_MODULE_0__resources_js__["elementIds"].controlCanvas);
+        const _this = this;
         canvas.addEventListener("click", e => {
-            var x = e.offsetX,
-                y = e.offsetY;
-            if (Math.pow(x - 59, 2) + Math.pow(y - 59, 2) < Math.pow(54, 2)) {
-                if (onSpinButtonClick)
-                    onSpinButtonClick();
+            if (_this.ready) {
+                var x = e.offsetX,
+                    y = e.offsetY;
+                if (Math.pow(x - 59, 2) + Math.pow(y - 59, 2) < Math.pow(54, 2)) {
+                    if (onSpinButtonClick)
+                        onSpinButtonClick();
+                }
             }
         });
-        this.loaded = true;
+    }
+
+    disable(disable) {
+        this._ready = !disable;
+        this.drawButton();
+    }
+
+    reset() {
+        this._ready = false;
+        this.drawButton();
+        this.disable(true);
+    }
+
+    set ready(ready) {
+        this._ready = ready;
+    }
+
+    get ready() {
+        return this._ready;
     }
 
 }
@@ -324,21 +514,21 @@ class ControlModule {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./BG.png": 8,
-	"./BTN_Spin.png": 9,
-	"./BTN_Spin_d.png": 10,
-	"./Bet_Line.png": 11,
-	"./SYM1.png": 12,
-	"./SYM3.png": 13,
-	"./SYM4.png": 14,
-	"./SYM5.png": 15,
-	"./SYM6.png": 16,
-	"./SYM7.png": 17,
-	"./resources.json": 18
+	"./BG.png": 9,
+	"./BTN_Spin.png": 10,
+	"./BTN_Spin_d.png": 11,
+	"./Bet_Line.png": 12,
+	"./SYM1.png": 13,
+	"./SYM3.png": 14,
+	"./SYM4.png": 15,
+	"./SYM5.png": 16,
+	"./SYM6.png": 17,
+	"./SYM7.png": 18,
+	"./resources.json": 19
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -354,10 +544,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 3;
+webpackContext.id = 4;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -478,7 +668,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -492,9 +682,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(4)
-var ieee754 = __webpack_require__(19)
-var isArray = __webpack_require__(20)
+var base64 = __webpack_require__(5)
+var ieee754 = __webpack_require__(20)
+var isArray = __webpack_require__(21)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -2272,24 +2462,24 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(24)))
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(7)(undefined);
+exports = module.exports = __webpack_require__(8)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "html,\r\nbody {\r\n    height: 100%;\r\n    min-height: 100%;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n\r\n/*top container ------------*/\r\n\r\n#mainContainer {\r\n    position: absolute;\r\n    display: flex;\r\n    flex-flow: row wrap;\r\n    min-width: 960px;\r\n    min-height: 536px;\r\n    left: 50%;\r\n    top: 50%;\r\n    margin: -268px 0 0 -480px;\r\n}\r\n\r\n#imagePanel {\r\n    flex: 6 auto;\r\n}\r\n\r\n#rightPanel {\r\n    flex: 4 auto;\r\n}\r\n\r\n#controlContainer {\r\n    /*background: black;*/\r\n    width: 100%;\r\n    height: 100%;\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n#infoPanel {\r\n    /*background-color: red;*/\r\n    flex: 1;\r\n}\r\n\r\n#selectPanel {\r\n    /*background-color: yellow;*/\r\n    flex: 1;\r\n}\r\n\r\n#controlPanel {\r\n    /*background-color: blue;*/\r\n    flex: 1;\r\n}", ""]);
+exports.push([module.i, "body,html{height:100%;min-height:100%;margin:0;padding:0}body{background-color:#add8e6}#mainContainer{position:absolute;display:flex;flex-flow:row wrap;min-width:960px;min-height:536px;left:50%;top:50%;margin:-268px 0 0 -480px}#imagePanel{flex:6 auto}#rightPanel{flex:4 auto}#controlContainer{width:100%;height:100%;display:flex;flex-direction:column}#controlPanel,#infoPanel,#selectPanel{flex:1}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -2368,76 +2558,76 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5).Buffer))
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "BG.png";
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6).Buffer))
 
 /***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "BTN_Spin.png";
+module.exports = __webpack_require__.p + "BG.png";
 
 /***/ }),
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "BTN_Spin_d.png";
+module.exports = __webpack_require__.p + "BTN_Spin.png";
 
 /***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "Bet_Line.png";
+module.exports = __webpack_require__.p + "BTN_Spin_d.png";
 
 /***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "SYM1.png";
+module.exports = __webpack_require__.p + "Bet_Line.png";
 
 /***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "SYM3.png";
+module.exports = __webpack_require__.p + "SYM1.png";
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "SYM4.png";
+module.exports = __webpack_require__.p + "SYM3.png";
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "SYM5.png";
+module.exports = __webpack_require__.p + "SYM4.png";
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "SYM6.png";
+module.exports = __webpack_require__.p + "SYM5.png";
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "SYM7.png";
+module.exports = __webpack_require__.p + "SYM6.png";
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "resources.json";
+module.exports = __webpack_require__.p + "SYM7.png";
 
 /***/ }),
 /* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "resources.json";
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -2527,7 +2717,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -2538,7 +2728,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -2570,7 +2760,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(22);
+	fixUrls = __webpack_require__(23);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -2829,7 +3019,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 
@@ -2924,7 +3114,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 var g;
@@ -2951,20 +3141,22 @@ module.exports = g;
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__css_styles_css__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__css_styles_css__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__css_styles_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__css_styles_css__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__resources_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__myPanels_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__myPanels_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_js__ = __webpack_require__(1);
 
 
 
 
-var requireContext = __webpack_require__(3);
+
+var requireContext = __webpack_require__(4);
 requireContext.keys().map(requireContext);
 
 (function() {
@@ -2974,84 +3166,84 @@ requireContext.keys().map(requireContext);
 })();
 
 const myApp = {
-    imagePanelModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["a" /* ImagePanelModule */](),
-    infoPanelModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["b" /* InfoPanelModule */](),
-    selectionModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["c" /* SelectionModule */](),
-    controlModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["d" /* ControlModule */](),
+    _gameState: __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].LOADING,
+    _imagePanelModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["a" /* ImagePanelModule */](),
+    _infoPanelModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["b" /* InfoPanelModule */](),
+    _selectionModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["c" /* SelectionModule */](),
+    _controlModule: new __WEBPACK_IMPORTED_MODULE_2__myPanels_js__["d" /* ControlModule */](),
     startApp: function() {
         this.loadResources(() => {
-            this.draw();
-            const imagePanelModule = this.imagePanelModule;
-            const infoPanelModule = this.infoPanelModule;
-            const selectionModule = this.selectionModule;
-            const controlModule = this.controlModule;
-            imagePanelModule.draw();
-            infoPanelModule.draw();
-            selectionModule.draw();
-            controlModule.draw();
+            const imagePanelModule = this._imagePanelModule;
+            const infoPanelModule = this._infoPanelModule;
+            const selectionModule = this._selectionModule;
+            const controlModule = this._controlModule;
+            const gameLogic = this._gameLogic;
+            this.init();
+            imagePanelModule.init();
+            infoPanelModule.init();
+            selectionModule.init();
+            controlModule.init();
 
-            this.controlModule.setupHandlers(function() {
-                const x = Math.floor((Math.random() * __WEBPACK_IMPORTED_MODULE_1__resources_js__["images"].quizImages.length));
-                const drawn = imagePanelModule.drawImage(x);
-                const selected = selectionModule.getSelectedValue();
-
-                if (drawn === selected) {
-                    infoPanelModule.drawText("YOU WON!!");
-                } else {
-                    infoPanelModule.drawText("LOST :(");
-                }
-
-
-            });
+            this.initSymbolSelectionHandler();
+            this.initSpinButtonClickHandler();
+            this.initClickHandler();
+            /*
+             *   starts game after all initializations
+             */
+            this._gameState = __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].INITIAL;
         });
     },
-    draw: function() {
+    init: function() {
         const mainPanel = document.getElementById(__WEBPACK_IMPORTED_MODULE_1__resources_js__["elementIds"].mainContainer);
         mainPanel.style.backgroundImage = "url(BG.png)";
     },
-    loadResources: function(callback) {
-        let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
-                    let quizImages = JSON.parse(xhr.response).quizImages;
-                    for (let imgUrl of quizImages) {
-                        const image = new Image();
-                        image.src = imgUrl;
-                        __WEBPACK_IMPORTED_MODULE_1__resources_js__["images"].quizImages.push(new __WEBPACK_IMPORTED_MODULE_1__resources_js__["MyImage"](imgUrl));
-                    }
-                    let layoutImages = JSON.parse(xhr.response).layoutImages;
-                    for (let imgUrl of layoutImages) {
-                        const image = new Image();
-                        image.src = imgUrl;
-                        __WEBPACK_IMPORTED_MODULE_1__resources_js__["images"].layoutImages.push(new __WEBPACK_IMPORTED_MODULE_1__resources_js__["MyImage"](imgUrl));
-                    }
-                } else {
-                    alert("Request was unsuccessful: " + xhr.status);
-                }
-                callback();
+    initSymbolSelectionHandler: function() {
+        this._selectionModule.setupHandlers((value) => {
+            if (value) {
+                this._gameState = __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].READY;
+                this._infoPanelModule.drawText(__WEBPACK_IMPORTED_MODULE_1__resources_js__["messages"].infoModule_ready);
+                this._infoPanelModule.drawDescText(__WEBPACK_IMPORTED_MODULE_1__resources_js__["messages"].infoModule_desc_ready);
+                this._controlModule.ready = true;
+                this._controlModule.drawButton();
             }
-        };
-        xhr.open("GET", "resources.json");
-        xhr.send(null);
+        });
     },
-};
+    initSpinButtonClickHandler: function() {
+        this._controlModule.setupHandlers(() => {
+            const random = __WEBPACK_IMPORTED_MODULE_3__utils_js__["a" /* Utils */].generateRandom(__WEBPACK_IMPORTED_MODULE_1__resources_js__["images"].quizImages.length);
+            this._imagePanelModule.drawImage(random);
+            const gameResult = (random + 1 == this._selectionModule.getSelectedValueAsNumber());
+            if (gameResult) {
+                this._gameState = __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].WIN;
+            } else {
+                this._gameState = __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].LOST;
+            }
 
-/***/ }),
-/* 25 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Decorators {
-    static elementToCenterDecorator(style, height, width) {
-        style.position = "relative";
-        style.left = "50%";
-        style.top = "50%";
-        style.margin = "-" + (height / 2) + "px 0 0 -" + (width / 2) + "px";
+            this._infoPanelModule.drawTextForGameState(this._gameState);
+            this._controlModule._ready = false;
+            this._controlModule.disable(true);
+            this._selectionModule.disable(true);
+        });
+    },
+    initClickHandler: function() {
+        document.getElementById('mainContainer').addEventListener('click', () => {
+            console.log(this._gameState);
+            if (this._gameState == __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].WIN || this._gameState == __WEBPACK_IMPORTED_MODULE_1__resources_js__["GameState"].LOST) {
+                this.resetStateToInitial();
+                document.getElementById('mainContainer').removeEventListener('click', this);
+            }
+        }, true); // in order to invoke after button click 
+    },
+    loadResources: function(callback) {
+        __WEBPACK_IMPORTED_MODULE_3__utils_js__["b" /* Services */].loadResources(callback);
+    },
+    resetStateToInitial: function() {
+        this._imagePanelModule.reset();
+        this._infoPanelModule.reset();
+        this._selectionModule.reset();
+        this._controlModule.reset();
     }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Decorators;
-
+};
 
 /***/ })
 /******/ ]);
